@@ -1,24 +1,17 @@
 # vue3
 
-## Project setup
-```
-yarn install
-```
+### feat 增加新功能
+### fix 修复问题/BUG
+### style 代码风格相关无影响
+### perf 优化/性能提升
+### refactor 重构
+### revert 撤销修改
+### test 测试相关
+### docs 文档/注释
+### chore 依赖更新/脚手架
+### workflow 工作流改进
+### ci 持续集成
+### types 类型定义文件更改
+### wip 开发中
 
-### Compiles and hot-reloads for development
-```
-yarn serve
-```
 
-### Compiles and minifies for production
-```
-yarn build
-```
-
-### Lints and fixes files
-```
-yarn lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).

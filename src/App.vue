@@ -7,6 +7,10 @@
     {{greetings}}
 
     <br>
+    {{x}}
+    {{y}}
+
+    <br>
     <button @click="increase()">按钮</button>
     <button @click="updateGreeting()">按更新title</button>
   </div>
@@ -14,7 +18,8 @@
 
 
 <script lang="ts">
-import {reactive, computed, ref, watch, toRefs, onMounted, onUpdated, onRenderTriggered} from 'vue'
+import {reactive, computed, ref, watch, toRefs, onMounted, onUpdated, onRenderTriggered, onUnmounted} from 'vue'
+import useMousePosition from '@/hooks/useMousePosition'
 
 interface DataProps {
   count: number;
@@ -26,19 +31,6 @@ interface DataProps {
 
 export default {
   setup() {
-    onMounted(() => {
-      console.log('mounted -> ')
-    })
-
-    // 更新时候调用，比如按钮点击了事件
-    onUpdated(() => {
-      console.log('onUpdated -> ')
-    })
-
-    onRenderTriggered((event) => {
-       console.log('event -> ', event)
-    })
-
     const greetings = ref('1111')
 
     const updateGreeting = () => {
@@ -46,8 +38,25 @@ export default {
       greetings.value += 'hello'
     }
 
+    const {x, y} = useMousePosition()
+
+    console.log('x,y -> ', x,y)
+
+
+    // 更新时候调用，比如按钮点击了事件
+    onUpdated(() => {
+      console.log('onUpdated -> ')
+    })
+
+    onRenderTriggered((event) => {
+      console.log('event -> ', event)
+    })
+
+
     const state: DataProps = reactive({
       count: 0,
+      x,
+      y,
       increase: () => state.count++,
       double: computed(() => state.count * 2),
       updateGreeting
