@@ -1,16 +1,36 @@
 <template>
   <div id="nav">
-    {{count}}
+    <Suspense>
+      <template #default>
+        <div>
+          <async-show />
+          <dog-show />
+        </div>
+      </template>
+      <template #fallback>
+        loading loading
+      </template>
+    </Suspense>
     <br>
-    {{double}}
+    {{ count }}
     <br>
-    {{greetings}}
+    {{ double }}
+    <br>
+    {{ greetings }}
+    <br>
+
+<!--    <Modal :isOpen="modalIsOpen" @close-modal="onModalClose"> My Modal</Modal>-->
+    <my-modal :isOpen="modalIsOpen" @close-modal="onModalClose"></my-modal>
+    <br>
+    <h1 v-if="loading">Loading!...</h1>
+    <img width="200" v-if="loaded" :src="result[0].url" />
 
     <br>
-    {{x}}
-    {{y}}
+    {{ x }}
+    {{ y }}
 
     <br>
+    <button @click="onModalOpen">open modal</button>
     <button @click="increase()">按钮</button>
     <button @click="updateGreeting()">按更新title</button>
   </div>
@@ -18,8 +38,12 @@
 
 
 <script lang="ts">
-import {reactive, computed, ref, watch, toRefs, onMounted, onUpdated, onRenderTriggered, onUnmounted} from 'vue'
+import {reactive, computed, ref, watch, toRefs, onUpdated, onRenderTriggered} from 'vue'
 import useMousePosition from '@/hooks/useMousePosition'
+import {useURLLoader} from '@/hooks/useURLLoader'
+import MyModal from './components/Modal.vue'
+import AsyncShow from './components/AsyncShow.vue'
+import DogShow from './components/DogShow.vue'
 
 interface DataProps {
   count: number;
@@ -29,7 +53,24 @@ interface DataProps {
   person?: { name?: string };
 }
 
+interface DogResult {
+  message: string;
+  status: string;
+}
+
+interface CatResult {
+  id: string;
+  url: string;
+  width: number;
+  height: number;
+}
+
 export default {
+  components: {
+    MyModal,
+    DogShow,
+    AsyncShow
+  },
   setup() {
     const greetings = ref('1111')
 
@@ -39,19 +80,35 @@ export default {
     }
 
     const {x, y} = useMousePosition()
+    console.log('useURLLoader -> ', )
+    // const r = useURLLoader('https://dog.ceo/api/breeds/image/random')
+    // const {result, loaded, loading} = useURLLoader<DogResult>('https://dog.ceo/api/breeds/image/random')
+    const {result, loaded, loading} = useURLLoader<CatResult[]>('https://api.thecatapi.com/v1/images/search?limit=1')
 
-    console.log('x,y -> ', x,y)
+    watch(result, () => {
+       if (result.value) {
+         console.log('value -> ', result.value[0].url)
+       }
+    })
 
+    const modalIsOpen = ref(false)
+
+    const onModalClose = () => {
+      modalIsOpen.value = false
+    }
+
+    const onModalOpen = () => {
+      modalIsOpen.value = true
+    }
 
     // 更新时候调用，比如按钮点击了事件
     onUpdated(() => {
-      console.log('onUpdated -> ')
+      // console.log('onUpdated -> ')
     })
 
     onRenderTriggered((event) => {
-      console.log('event -> ', event)
+      // console.log('event -> ', event)
     })
-
 
     const state: DataProps = reactive({
       count: 0,
@@ -59,7 +116,13 @@ export default {
       y,
       increase: () => state.count++,
       double: computed(() => state.count * 2),
-      updateGreeting
+      updateGreeting,
+      result,
+      loaded,
+      loading,
+      modalIsOpen,
+      onModalOpen,
+      onModalClose,
     })
 
     watch([greetings, () => state.count], (newValue, oldValue) => {

@@ -1,5 +1,31 @@
 # vue3
 
+
+### Suspense包裹的多个组件，会等到一起渲染
+```
+
+<Suspense>
+  <template #default>
+    <div>
+      <async-show />
+      <dog-show />
+    </div>
+  </template>
+  <template #fallback>
+    loading loading
+  </template>
+</Suspense>
+
+```
+
+
+
+
+
+
+
+
+
 ### feat 增加新功能
 ### fix 修复问题/BUG
 ### style 代码风格相关无影响
@@ -13,5 +39,7 @@
 ### ci 持续集成
 ### types 类型定义文件更改
 ### wip 开发中
+
+
 
 
