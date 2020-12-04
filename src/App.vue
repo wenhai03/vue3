@@ -1,148 +1,58 @@
 <template>
-  <div id="nav">
-    <Suspense>
-      <template #default>
-        <div>
-          <async-show />
-          <dog-show />
-        </div>
-      </template>
-      <template #fallback>
-        loading loading
-      </template>
-    </Suspense>
-    <br>
-    {{ count }}
-    <br>
-    {{ double }}
-    <br>
-    {{ greetings }}
-    <br>
+  <div class="container">
+    <global-header :user="currentUser"></global-header>
 
-<!--    <Modal :isOpen="modalIsOpen" @close-modal="onModalClose"> My Modal</Modal>-->
-    <my-modal :isOpen="modalIsOpen" @close-modal="onModalClose"></my-modal>
-    <br>
-    <h1 v-if="loading">Loading!...</h1>
-    <img width="200" v-if="loaded" :src="result[0].url" />
+    <column-list :list="list"></column-list>
 
-    <br>
-    {{ x }}
-    {{ y }}
-
-    <br>
-    <button @click="onModalOpen">open modal</button>
-    <button @click="increase()">按钮</button>
-    <button @click="updateGreeting()">按更新title</button>
   </div>
 </template>
 
-
 <script lang="ts">
+import ColumnList, {ColumnProps} from '@/components/ColumnList.vue'
+import GlobalHeader, {UserProps} from '@/components/GlobalHeader.vue'
+import 'bootstrap/dist/css/bootstrap.min.css'
 import {reactive, computed, ref, watch, toRefs, onUpdated, onRenderTriggered} from 'vue'
-import useMousePosition from '@/hooks/useMousePosition'
-import {useURLLoader} from '@/hooks/useURLLoader'
-import MyModal from './components/Modal.vue'
-import AsyncShow from './components/AsyncShow.vue'
-import DogShow from './components/DogShow.vue'
-
-interface DataProps {
-  count: number;
-  double: number;
-  increase: () => void;
-  numbers?: number[];
-  person?: { name?: string };
+const testData: ColumnProps[] = [
+  {
+    id: 1,
+    title: 'test1的专栏',
+    description: '这是的test1专栏，有一段非常有意思的简介，可以更新一下欧, 这是的test1专栏，有一段非常有意思的简介，可以更新一下欧',
+  },
+  {
+    id: 2,
+    title: 'test2的专栏',
+    description: '这是的test2专栏，有一段非常有意思的简介，可以更新一下欧',
+  },
+  {
+    id: 3,
+    title: 'test3的专栏',
+    description: '这是的test1专栏，有一段非常有意思的简介，可以更新一下欧 这是的test1专栏，有一段非常有意思的简介，可以更新一下欧'
+  },
+  {
+    id: 4,
+    title: 'test4的专栏',
+    description: '这是的test2专栏，有一段非常有意思的简介，可以更新一下欧',
+  }
+]
+const currentUser: UserProps = {
+  isLogin: true,
+  nickName: '你好'
 }
 
-interface DogResult {
-  message: string;
-  status: string;
-}
-
-interface CatResult {
-  id: string;
-  url: string;
-  width: number;
-  height: number;
-}
 
 export default {
   components: {
-    MyModal,
-    DogShow,
-    AsyncShow
+    ColumnList,
+    GlobalHeader
   },
-  setup() {
-    const greetings = ref('1111')
-
-    const updateGreeting = () => {
-      console.log('监听 -> ')
-      greetings.value += 'hello'
-    }
-
-    const {x, y} = useMousePosition()
-    console.log('useURLLoader -> ', )
-    // const r = useURLLoader('https://dog.ceo/api/breeds/image/random')
-    // const {result, loaded, loading} = useURLLoader<DogResult>('https://dog.ceo/api/breeds/image/random')
-    const {result, loaded, loading} = useURLLoader<CatResult[]>('https://api.thecatapi.com/v1/images/search?limit=1')
-
-    watch(result, () => {
-       if (result.value) {
-         console.log('value -> ', result.value[0].url)
-       }
-    })
-
-    const modalIsOpen = ref(false)
-
-    const onModalClose = () => {
-      modalIsOpen.value = false
-    }
-
-    const onModalOpen = () => {
-      modalIsOpen.value = true
-    }
-
-    // 更新时候调用，比如按钮点击了事件
-    onUpdated(() => {
-      // console.log('onUpdated -> ')
-    })
-
-    onRenderTriggered((event) => {
-      // console.log('event -> ', event)
-    })
-
-    const state: DataProps = reactive({
-      count: 0,
-      x,
-      y,
-      increase: () => state.count++,
-      double: computed(() => state.count * 2),
-      updateGreeting,
-      result,
-      loaded,
-      loading,
-      modalIsOpen,
-      onModalOpen,
-      onModalClose,
-    })
-
-    watch([greetings, () => state.count], (newValue, oldValue) => {
-      console.log('newValue, oldValue -> ', newValue, oldValue)
-      document.title = 'updated' + greetings.value
-    })
+  setup( ) {
     return {
-      ...toRefs(state),
-      greetings
+      list: testData,
+      currentUser
     }
-
   }
 }
 </script>
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
+
 </style>
