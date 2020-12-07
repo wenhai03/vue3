@@ -2,7 +2,7 @@
   <div class="container">
     <global-header :user="currentUser"></global-header>
 
-    <form class="validate-form-container">
+    <validate-form @form-submit="onFormSubmit" class="validate-form-container">
       <div class="mb-3">
         <label class="form-label">邮箱地址</label>
 
@@ -12,6 +12,7 @@
             :rules="emailRules"
             v-model="emailVal"
             placeholder="请输入邮箱"
+            ref="inputRef"
         ></validate-input>
 
       </div>
@@ -24,7 +25,12 @@
             placeholder="请输入密码"
         ></validate-input>
       </div>
-    </form>
+
+<!--      <template v-slot:submit>-->
+      <template #submit>
+        <span class="btn btn-danger">submit</span>
+      </template>
+    </validate-form>
 
   </div>
 </template>
@@ -33,6 +39,7 @@
 import {reactive, ref} from 'vue'
 import GlobalHeader, {UserProps} from '@/components/GlobalHeader.vue'
 import ValidateInput, {RulesProp} from '@/components/ValidateInput.vue'
+import ValidateForm from '@/components/ValidateForm.vue'
 import 'bootstrap/dist/css/bootstrap.min.css'
 const currentUser: UserProps = {
   isLogin: true,
@@ -43,11 +50,13 @@ const emailReg = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0
 export default {
   components: {
     GlobalHeader,
-    ValidateInput
+    ValidateInput,
+    ValidateForm
   },
   inheritAttrs: true,
   setup( ) {
     const emailVal = ref(null)
+    const inputRef = ref<any>('123')
     const emailRules = [
       {type: 'required', message: '电子邮箱地址不能为空'},
       {type: 'email', message: '请输入正确的电子邮箱格式'}
@@ -58,7 +67,11 @@ export default {
     ]
 
 
-    const passwordVal = ref('')
+    const passwordVal = ref(null)
+
+    const onFormSubmit =(result: boolean) => {
+        console.log('result', inputRef.value.validateInput())
+    }
 
     return {
       currentUser,
@@ -66,6 +79,8 @@ export default {
       passwordRules,
       emailVal,
       passwordVal,
+      onFormSubmit,
+      inputRef
     }
   }
 }
