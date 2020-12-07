@@ -2,53 +2,70 @@
   <div class="container">
     <global-header :user="currentUser"></global-header>
 
-    <column-list :list="list"></column-list>
+    <form class="validate-form-container">
+      <div class="mb-3">
+        <label class="form-label">邮箱地址</label>
+
+        <validate-input
+            type="text"
+            class="hello"
+            :rules="emailRules"
+            v-model="emailVal"
+            placeholder="请输入邮箱"
+        ></validate-input>
+
+      </div>
+      <div class="mb-3">
+        <label class="form-label">密码</label>
+        <validate-input
+            type="password"
+            :rules="passwordRules"
+            v-model="passwordVal"
+            placeholder="请输入密码"
+        ></validate-input>
+      </div>
+    </form>
 
   </div>
 </template>
 
 <script lang="ts">
-import ColumnList, {ColumnProps} from '@/components/ColumnList.vue'
+import {reactive, ref} from 'vue'
 import GlobalHeader, {UserProps} from '@/components/GlobalHeader.vue'
+import ValidateInput, {RulesProp} from '@/components/ValidateInput.vue'
 import 'bootstrap/dist/css/bootstrap.min.css'
-import {reactive, computed, ref, watch, toRefs, onUpdated, onRenderTriggered} from 'vue'
-const testData: ColumnProps[] = [
-  {
-    id: 1,
-    title: 'test1的专栏',
-    description: '这是的test1专栏，有一段非常有意思的简介，可以更新一下欧, 这是的test1专栏，有一段非常有意思的简介，可以更新一下欧',
-  },
-  {
-    id: 2,
-    title: 'test2的专栏',
-    description: '这是的test2专栏，有一段非常有意思的简介，可以更新一下欧',
-  },
-  {
-    id: 3,
-    title: 'test3的专栏',
-    description: '这是的test1专栏，有一段非常有意思的简介，可以更新一下欧 这是的test1专栏，有一段非常有意思的简介，可以更新一下欧'
-  },
-  {
-    id: 4,
-    title: 'test4的专栏',
-    description: '这是的test2专栏，有一段非常有意思的简介，可以更新一下欧',
-  }
-]
 const currentUser: UserProps = {
   isLogin: true,
   nickName: '你好'
 }
-
+const emailReg = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
 
 export default {
   components: {
-    ColumnList,
-    GlobalHeader
+    GlobalHeader,
+    ValidateInput
   },
+  inheritAttrs: true,
   setup( ) {
+    const emailVal = ref(null)
+    const emailRules = [
+      {type: 'required', message: '电子邮箱地址不能为空'},
+      {type: 'email', message: '请输入正确的电子邮箱格式'}
+    ]
+
+    const passwordRules = [
+      {type: 'required', message: '密码不能为空'}
+    ]
+
+
+    const passwordVal = ref('')
+
     return {
-      list: testData,
-      currentUser
+      currentUser,
+      emailRules,
+      passwordRules,
+      emailVal,
+      passwordVal,
     }
   }
 }
