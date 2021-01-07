@@ -6,6 +6,17 @@
   <router-view/>
 </template>
 
+<script>
+import axios from 'axios'
+export default {
+  mounted() {
+    axios.get('/user/detail').then(res => {
+      console.log(res)
+    })
+  }
+}
+</script>
+
 <style>
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
